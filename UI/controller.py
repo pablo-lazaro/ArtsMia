@@ -47,4 +47,46 @@ class Controller:
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(ft.Text(f"La componente connessa contenente l'oggetto con id {idOggetto} è composta di {sizecCompConn} nodi", color="green"))
         self._view.update_page()
+
+        self._view._ddlun.disabled = False
+        self._view._btnCerca.disabled = False
+
+        lunValues = list(range(2, sizecCompConn))
+
+        self._view.update_page()
+
+        #for v in lunValues:
+            #self._view._ddlun.options.append(ft.dropdown.Option(v))
+
+        lunValuesDD = list(map(lambda x: ft.dropdown.Option(x), lunValues)) # sostituisce il ciclo, prende una lista, per ogni elemento ci applica una funzione e lo aggiunge alla lista
+        self._view._ddlun.options = lunValuesDD
+
+        self._view.update_page()
+
         return
+
+
+
+    def handleCerca(self, e):
+        source = self._model.getNodeFromId(int(self._view._txtIdOggetto.value))
+
+        lun = self._view._ddlun.value
+
+        if lun is None:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append("Attenzione, selezioanre un valore"
+                                                  "di lunghezza fra le scelte proposte.", color="red")
+            self._view.update_page()
+            return
+
+        lunInt = int(lun)
+
+        path, cost = self._model.getOptPath(source, lunInt)
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text(f"Ho trovato un cammino che parte da {source}"
+                                                      f"che ha un peso totale pari a {cost}"))
+        self._view.txt_result.controls.append(ft.Text(f"Di seguito i nodi che compongono questo cammino:", color="green"))
+        for p in path:
+            self._view.txt_result.controls.append(ft.Text(p))
+
+        self._view.update_page()
